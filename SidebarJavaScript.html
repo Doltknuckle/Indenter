@@ -1,0 +1,165 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+  /**
+   * Run initializations on sidebar load.
+   */
+  $(function() {
+    //setup buttons
+    $('#sidebar-button-update').click(onUpdateClick);
+    $('#sidebar-button-set').click(onSetClick);
+    $('#sidebar-button-group').click(onSetGroupClick);
+    $('#sidebar-button-store').click(onStoreClick);
+    $('#sidebar-indent-up').click(tickUpIndent);
+    $('#sidebar-indent-down').click(tickDownIndent);
+    $('#sidebar-firstLine-up').click(tickUpFirstLine);
+    $('#sidebar-firstLine-down').click(tickDownFirstLine);
+    
+    
+  });
+
+/**
+ Button Actions
+**/
+  function onUpdateClick() {
+    //Get Cursor Parent
+    google.script.run
+       .withSuccessHandler(function(cursorParent) {
+            // Respond to success conditions here.
+            refreshInterface(cursorParent[0] + ":" + cursorParent[1], cursorParent[2], cursorParent[3]);
+            showStatus('Ready.');
+          })
+       .withFailureHandler(function(msg) {
+            // Respond to failure conditions here.
+            showStatus(msg, 'error');
+          })
+       .getCursorInfo();
+  }
+  
+  function onSetClick() {
+    //Update Current item
+    var indent = document.getElementById('sidebar-indent').value;
+    var firstLine = document.getElementById('sidebar-firstLine').value;
+    google.script.run
+       .withSuccessHandler(function(msg) {
+            // Respond to success conditions here.
+            showStatus(msg, 'ok');
+          })
+       .withFailureHandler(function(msg) {
+            // Respond to failure conditions here.
+            showStatus(msg, 'error');
+          })
+       .setIndent(indent, firstLine);
+  }
+ 
+  function onStoreClick() {
+    var indent = document.getElementById('sidebar-indent').value;
+    var firstLine = document.getElementById('sidebar-firstLine').value;
+    var rootNode = document.getElementById('sidebar-storedList');
+    
+    var rowNode,nodeButton,nodeText, nodeId;
+    
+    //Add to root node
+    nodeId = "sidebar-setButton-"+indent+"-"+firstLine;
+    rowNode = document.createElement("div");
+      rowNode.id = nodeId;
+    rootNode.appendChild(rowNode)
+    
+    //Set button
+    nodeText = "Set ("+indent+","+firstLine+")"
+    nodeButton = document.createElement("input");
+      nodeButton.type = "button";
+      nodeButton.value = nodeText;
+      nodeButton.onclick = nodeSet;
+      nodeButton.setAttribute("myIndent", indent);
+      nodeButton.setAttribute("myFirstLine", firstLine);
+    rowNode.appendChild(nodeButton);
+    
+    //Remove Button
+    var nodeButton = document.createElement("input");
+      nodeButton.type = "button";
+      nodeButton.value = "Remove";
+      nodeButton.onclick = removeLine;
+    rowNode.appendChild(nodeButton);
+  }
+  
+
+  /**
+  Button Controls
+  **/
+  function removeLine(){
+    var parent = this.parentNode;
+    parent.parentNode.removeChild(parent);
+  }
+  
+ function nodeSet(){
+   var indent = this.getAttribute("myIndent");
+   var firstLine = this.getAttribute("myFirstLine");
+    google.script.run
+       .withSuccessHandler(function(msg) {
+            // Respond to success conditions here.
+            showStatus(msg, 'ok');
+          })
+       .withFailureHandler(function(msg) {
+            // Respond to failure conditions here.
+            showStatus(msg, 'error');
+          })
+       .setIndent(indent, firstLine);
+ }
+
+
+  /**
+  Updates Interface
+  **/
+  function refreshInterface(preview, indent, firstLine){
+    $('#sidebar-cursor-preview').val(preview);
+    $('#sidebar-indent').val(indent);
+    $('#sidebar-firstLine').val(firstLine);
+  }
+
+  function tickUpIndent() {
+    var value = parseInt(document.getElementById('sidebar-indent').value);
+    value = value +5;
+    $('#sidebar-indent').val(value);
+  }
+  
+  function tickDownIndent() {
+    var value = parseInt(document.getElementById('sidebar-indent').value);
+    value = value - 5;
+    if (value < 0){
+      $('#sidebar-indent').val(0);
+    } else {
+      $('#sidebar-indent').val(value);
+    }
+  }
+  
+  function tickUpFirstLine() {
+    var value = parseInt(document.getElementById('sidebar-firstLine').value);
+    value = value +5;
+    $('#sidebar-firstLine').val(value);
+  }
+  
+  function tickDownFirstLine() {
+    var value = parseInt(document.getElementById('sidebar-firstLine').value);
+    value = value - 5;
+    if (value < 0){
+      $('#sidebar-firstLine').val(0);
+    } else {
+      $('#sidebar-firstLine').val(value);
+    }
+  }
+
+  /**
+   * Displays the given status message in the sidebar.
+   *
+   * @param {String} msg The status message to display.
+   * @param {String} classId The message type (class id) that the message
+   *   should be displayed as.
+   */
+  function showStatus(msg, classId) {
+    $('#sidebar-status').removeClass().html(msg);
+    if (classId) {
+      $('#sidebar-status').addClass(classId);
+    }
+  }
+
+</script>
