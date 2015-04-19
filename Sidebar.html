@@ -11,14 +11,14 @@
     <div class="row">
       <label for="sidebar-indent">Indent:</label>
       <input type="text" id="sidebar-indent" value="0" class="input-integer">
-      <button id="sidebar-indent-up">+</button>
-      <button id="sidebar-indent-down">-</button>
+      <button id="sidebar-indent-up" class="button-mini">+</button>
+      <button id="sidebar-indent-down" class="button-mini">-</button>
     </div>
     <div class="row">
        <label for="sidebar-firstLine">First Line:</label>
        <input type="text" id="sidebar-firstLine" value="0" class="input-integer">
-       <button id="sidebar-firstLine-up">+</button>
-       <button id="sidebar-firstLine-down">-</button>
+       <button id="sidebar-firstLine-up" class="button-mini">+</button>
+       <button id="sidebar-firstLine-down" class="button-mini">-</button>
     </div>
     <div class="row">
       <button id="sidebar-button-update">Update</button>
@@ -31,14 +31,6 @@
   <hr/>
     <div id="sidebar-status"></div>
 </div>
-
-<div class="sidebar bottom">
-  <img alt="Add-on logo" class="logo" width="25"
-      src="https://googledrive.com/host/0B0G1UdyJGrY6XzdjQWF4a1JYY1k/apps-script_2x.png">
-  <span class="gray branding-text">Docs Add-on Template by Google</span>
-</div>
-
-
 
 <!-- Use a templated HTML printing scriptlet to import JavaScript -->
 <?!= HtmlService.createHtmlOutputFromFile('SidebarJavaScript').getContent(); ?>

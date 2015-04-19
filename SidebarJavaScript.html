@@ -22,11 +22,12 @@
 **/
   function onUpdateClick() {
     //Get Cursor Parent
+    hideStatus();
     google.script.run
        .withSuccessHandler(function(cursorParent) {
             // Respond to success conditions here.
-            refreshInterface(cursorParent[0] + ":" + cursorParent[1], cursorParent[2], cursorParent[3]);
-            showStatus('Ready.');
+            refreshInterface(cursorParent[0] + '\n' + cursorParent[1], cursorParent[2], cursorParent[3]);
+            showStatus('OK');
           })
        .withFailureHandler(function(msg) {
             // Respond to failure conditions here.
@@ -39,10 +40,11 @@
     //Update Current item
     var indent = document.getElementById('sidebar-indent').value;
     var firstLine = document.getElementById('sidebar-firstLine').value;
+    hideStatus();
     google.script.run
        .withSuccessHandler(function(msg) {
             // Respond to success conditions here.
-            showStatus(msg, 'ok');
+            showStatus(msg);
           })
        .withFailureHandler(function(msg) {
             // Respond to failure conditions here.
@@ -57,11 +59,12 @@
     var rootNode = document.getElementById('sidebar-storedList');
     
     var rowNode,nodeButton,nodeText, nodeId;
-    
+    hideStatus();
     //Add to root node
     nodeId = "sidebar-setButton-"+indent+"-"+firstLine;
     rowNode = document.createElement("div");
       rowNode.id = nodeId;
+      rowNode.setAttribute("class", "row-action");
     rootNode.appendChild(rowNode)
     
     //Set button
@@ -72,6 +75,7 @@
       nodeButton.onclick = nodeSet;
       nodeButton.setAttribute("myIndent", indent);
       nodeButton.setAttribute("myFirstLine", firstLine);
+      nodeButton.setAttribute("class", "button");
     rowNode.appendChild(nodeButton);
     
     //Remove Button
@@ -79,7 +83,15 @@
       nodeButton.type = "button";
       nodeButton.value = "Remove";
       nodeButton.onclick = removeLine;
+      nodeButton.setAttribute("class", "button");
     rowNode.appendChild(nodeButton);
+    
+    //Notes Text
+    var nodeText = document.createElement("input");
+      nodeText.type = "text";
+      nodeText.setAttribute("class", "note-text");
+      nodeText.setAttribute("placeholder", "Notes");
+    rowNode.appendChild(nodeText);
   }
   
 
@@ -91,13 +103,14 @@
     parent.parentNode.removeChild(parent);
   }
   
- function nodeSet(){
+  function nodeSet(){
    var indent = this.getAttribute("myIndent");
    var firstLine = this.getAttribute("myFirstLine");
+   hideStatus();
     google.script.run
        .withSuccessHandler(function(msg) {
             // Respond to success conditions here.
-            showStatus(msg, 'ok');
+            showStatus(msg, 'OK');
           })
        .withFailureHandler(function(msg) {
             // Respond to failure conditions here.
@@ -160,6 +173,9 @@
     if (classId) {
       $('#sidebar-status').addClass(classId);
     }
+  }
+  function hideStatus() {
+      $('#sidebar-status').addClass("hidden");
   }
 
 </script>

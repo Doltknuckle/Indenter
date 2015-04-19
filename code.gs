@@ -1,127 +1,94 @@
 /**
- * @OnlyCurrentDoc  Limits the script to only accessing the current document.
- */
-
-var SIDEBAR_TITLE = 'Indenter v0.1';
-
-/**
- * Adds a custom menu with items to show the sidebar and dialog.
+ * Indenter v1.0
+ * Created by Devin Hunter (Doltknuckle)
  *
- * @param {Object} e The event parameter for a simple onOpen trigger.
- */
-function onOpen(e) {
-  DocumentApp.getUi()
-      .createAddonMenu()
-      .addItem('Show sidebar', 'showSidebar')
-      .addToUi();
-}
-
-/**
- * Runs when the add-on is installed; calls onOpen() to ensure menu creation and
- * any other initializion work is done immediately.
+ * This Add On is designed to quickly set the indentation values of text in a google doc.
  *
- * @param {Object} e The event parameter for a simple onInstall trigger.
- */
+ * There AS-IS software and there is no guarentee that it will work. If you want to use this
+ * feel free to do so. There is no claim to the software created here.
+**/
+
+
+//** Global variables
+var SIDEBAR_TITLE = 'Indenter v1.0';
+
+
+//** Initializtion
 function onInstall(e) {
+  //When you install the script, act as if you just opened the script.
   onOpen(e);
 }
 
-/**
- * Opens a sidebar. The sidebar structure is described in the Sidebar.html
- * project file.
- */
+function onOpen(e) {
+  //Create the menu. This will only work on a google doc.
+  DocumentApp.getUi()
+      .createAddonMenu()
+      .addItem('Open Tool', 'showSidebar')
+      .addToUi();
+}
+
+
+//** Menu
 function showSidebar() {
+  //Create the menu from HTML file.
   var ui = HtmlService.createTemplateFromFile('Sidebar')
       .evaluate()
       .setTitle(SIDEBAR_TITLE);
   DocumentApp.getUi().showSidebar(ui);
 }
 
-/**
- Cursor Stuff
-**/
+
+//** Get Stuff
 
 function getCursorInfo() {
-  //Find cursor and return parent object
-  
-  //Global Objects
+  //* Gather information about the element that the cursor is in or the items selected.
+  //Initalize variables
   var array = new Array();
-  var typeText = "";
+  var typeText = "something";
   var content = "";
   var indent = 0;
   var firstLine = 0;
-  
-  //Get cursor information
+  //Get cursor and selection variable
   var cursor = DocumentApp.getActiveDocument().getCursor();
-  var selection = DocumentApp.getActiveDocument().getSelection();
+  var selection = DocumentApp.getActiveDocument().getSelection();  
+  
+  //If Cursor
   if (cursor) {
-    //Find out about cursor target
-    var element = cursor.getElement();
-    var parent = element.getParent();
-    var type = parent.getType();
-    typeText = "Cursor(" + type + ")";
-    if (type == "PARAGRAPH" || type == "LIST_ITEM") {
-      //Get paragraph and list info
-      content = parent.getText();
-      indent = parent.getIndentStart();
-      firstLine = parent.getIndentFirstLine();
-    } else if(type == "BODY_SECTION"){
-      //Get Body section elements
-      content = element.getText();
-      indent = element.getIndentStart();
-      firstLine = element.getIndentFirstLine();
-    } else {
-    content = "UNABLE_TO_INDENT";
+    var element = cursor.getElement()
+    var type = element.getType();
+    //If text type, get parent
+    if(type != "PARAGRAPH" && type != "LIST_ITEM"){
+      element = element.getParent();  
+      type = element.getType();
     }
-    //Deal with text preview.
-      if (content.length > 30){
-        content = content.substr(0,30) + '...';
-      }
-        content = '\n' + content;
-      
+    //Get Data
+    typeText = "" + type;
+    content = checkText(element.getText(), 30);
+    indent = checkIndent(element.getIndentStart(), indent);
+    firstLine = checkIndent(element.getIndentFirstLine(), firstLine);
 
   } else if(selection) {
-    //Section made get multiple items.
+    //If Selection
     var elements = selection.getRangeElements();
     var count = elements.length;
-    typeText = "Select(" + count +")";
-     
+    
+    typeText = "Selection(" + count +")";
+    
+    //loop through selection
     for (var i in elements){
       var target = elements[i].getElement();
-      var text = target.getText();
-      var type = target.getType()
+      var type = target.getType();
       
-      //Deal with text preview.
-      if (text.length > 30){
-        text = text.substr(0,30) + '...';
+      //If TEXT type, get parent
+      if(type != "PARAGRAPH" && type != "LIST_ITEM"){
+        target = target.getParent();  
+        type = target.getType();
       }
-        content = content + '\n' + text;
-      
-      //Indent check
-      var binIndent, binFirstLine, object;
-      if (type == "PARAGRAPH") {
-        object = target.asParagraph();
-      } else if(type == "LIST_ITEM") {
-        object = target.asListItem();
-      }
-      else if(type == "BODY_SECTION"){
-        object = target.asParagraph();
-      }
-      
-      //Get values
-      if(object){
-        binIndent = object.getIndentStart();
-        binFirstLine = object.getIndentFirstLine();
-        
-        if(binIndent > indent){
-          indent = binIndent;
-        }
-        if(binFirstLine > firstLine){
-          firstLine = binFirstLine;
-        }  
-      }  
+      //Get Data
+      content = content + type + ":" + checkText(target.getText(), 30) + '\n';
+      indent = checkIndent(target.getIndentStart(), indent);
+      firstLine = checkIndent(target.getIndentFirstLine(), firstLine);
     }
-
   } else {
     typeText = "ERROR";
     content = "Nothing to target";
@@ -132,12 +99,35 @@ function getCursorInfo() {
   array.push(content);
   array.push(indent);    
   array.push(firstLine);
-  
   return array;
 }
 
+
+//** Check Stuff
+
+function checkText(target, length) {
+  //Fix long content data
+  if (target.length > length){
+    target = target.substr(0,length) + '...';
+  }  
+  return target;
+}
+
+function checkIndent(input, current){
+  //If no input, return zero, if smaller than curent, use curent.
+  if (!input){
+    input = 0;
+  } else if(input < current){
+    input = current;
+  }
+  return input;
+}
+
+//* Set Stuff
+
 function setIndent(ind,fl){
-  var content = "setIndnet Triggered"
+  //- Change the indent of the targeted object.
+  var content = "OK"
   var indent = parseInt(ind);
   var firstLine = parseInt(fl);
   var targetArray = new Array();
@@ -146,63 +136,27 @@ function setIndent(ind,fl){
   //Set indent of object at cursor or selection
   var cursor = DocumentApp.getActiveDocument().getCursor();
   var selection = DocumentApp.getActiveDocument().getSelection();
+  //If Cursor
   if (cursor) {
-    var element = cursor.getElement()
-    var parent = element.getParent();
-    
-    //Test for indentable characters
-    type = parent.getType();
-    if (type == "PARAGRAPH" || type == "LIST_ITEM") {
-      target = parent;
-    } else if(type == "BODY_SECTION"){
-      target = element;  
-    } else {
-    content = "UNABLE_TO_INDENT";
-    }
-    
-    //Process indent
-    if (target) {
-      targetArray.push(target);
-    }
-  } else if (selection){
+    performIndent(cursor.getElement(), indent, firstLine);
+  } else if (selection) {
+    //If Selection
     var elements = selection.getRangeElements();
-    
+    //Loop though elements
     for (var i in elements){
-      //Get Element Info
-      target = elements[i].getElement();
-      type = target.getType()
-      content = content + type;
-      
-      //Check for text type and retarget parent
-      if (type == "TEXT"){
-       target = target.getParent();
-       type = target.getType();
-      }
-      
-      //convert target into an actionable obect
-      if (type == "PARAGRAPH" || type == "BODY_SECTION") {
-        object = target.asParagraph();
-      } else if(type == "LIST_ITEM") {
-        object = target.asListItem();
-      } else {
-        content = content + "\n TODO: Error handling";
-      }
-      
-      //Load objects into target array.
-      if(object){
-        targetArray.push(object);
+      performIndent(elements[i].getElement(), indent, firstLine);
       }
     }
-
-  } else {
-    content = "No Target Available";
-  }
-  
-  //Process target List
-  for (var i in targetArray){
-  targetArray[i].setIndentStart(indent);
-  targetArray[i].setIndentFirstLine(firstLine);
-  }
-  
   return content;
+}
+
+function performIndent(target, indent, firstLine){
+  //- Do the actual indent change;
+  var type = target.getType();
+    //If not a type with indent, get parent
+    if (type != "PARAGRAPH" && type != "LIST_ITEM" && type != "BODY_SECTION" ) {
+      target = target.getParent();
+    }
+    target.setIndentStart(indent);
+    target.setIndentFirstLine(firstLine);
 }
