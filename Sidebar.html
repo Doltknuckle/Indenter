@@ -5,31 +5,35 @@
 <div class="sidebar branding-below">
   <form>
     <div class="row">
-      <label for="sidebar-cursor-preview">Targeted Text:</label>
-      <textarea id="sidebar-cursor-preview" class="width-100" rows="4"></textarea>
+      <p>Inspect cursor to get values for buttons.</p>
     </div>
     <div class="row">
-      <label for="sidebar-indent">Indent:</label>
-      <input type="text" id="sidebar-indent" value="0" class="input-integer">
-      <button id="sidebar-indent-up" class="button-mini">+</button>
-      <button id="sidebar-indent-down" class="button-mini">-</button>
+      <div class="cell">
+        <label for="sidebar-indent">Indent:</label>
+        <input type="number" id="sidebar-indent" value="0" class="input-integer">
+      </div>
     </div>
     <div class="row">
-       <label for="sidebar-firstLine">First Line:</label>
-       <input type="text" id="sidebar-firstLine" value="0" class="input-integer">
-       <button id="sidebar-firstLine-up" class="button-mini">+</button>
-       <button id="sidebar-firstLine-down" class="button-mini">-</button>
+      <div class="cell">
+        <label for="sidebar-firstLine">First Line:</label>
+        <input type="number" id="sidebar-firstLine" value="0" class="input-integer cell">
+      </div>
     </div>
     <div class="row">
-      <button id="sidebar-button-update">Update</button>
-      <button id="sidebar-button-set">Set</button>
-      <button id="sidebar-button-store">Store</button>
+      <button id="sidebar-button-update">Inspect Cursor</button>
+      <button id="sidebar-button-store" class="action">Create Button</button>
     </div>
   </form>
   <hr/>
+  <h2>Action Buttons</h2>
   <div id="sidebar-storedList"></div>
-  <hr/>
-    <div id="sidebar-status"></div>
+  <hr />
+  <div id="sidebar-helper">
+    <div class="row">
+      <div id="sidebar-status-label">Status:</div>
+      <div id="sidebar-status">Initalize</div>
+    </div>
+  </div>
 </div>
 
 <!-- Use a templated HTML printing scriptlet to import JavaScript -->

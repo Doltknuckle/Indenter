@@ -6,13 +6,7 @@
   $(function() {
     //setup buttons
     $('#sidebar-button-update').click(onUpdateClick);
-    $('#sidebar-button-set').click(onSetClick);
-    $('#sidebar-button-group').click(onSetGroupClick);
-    $('#sidebar-button-store').click(onStoreClick);
-    $('#sidebar-indent-up').click(tickUpIndent);
-    $('#sidebar-indent-down').click(tickDownIndent);
-    $('#sidebar-firstLine-up').click(tickUpFirstLine);
-    $('#sidebar-firstLine-down').click(tickDownFirstLine);
+    $('#sidebar-button-store').click(onStoreClick);    
     
     
   });
@@ -21,13 +15,13 @@
  Button Actions
 **/
   function onUpdateClick() {
-    //Get Cursor Parent
     hideStatus();
+    //Get Cursor Parent
     google.script.run
        .withSuccessHandler(function(cursorParent) {
             // Respond to success conditions here.
-            refreshInterface(cursorParent[0] + '\n' + cursorParent[1], cursorParent[2], cursorParent[3]);
-            showStatus('OK');
+            refreshInterface(cursorParent[0], cursorParent[1]);
+            showStatus("Update Done");
           })
        .withFailureHandler(function(msg) {
             // Respond to failure conditions here.
@@ -37,10 +31,10 @@
   }
   
   function onSetClick() {
+    hideStatus();
     //Update Current item
     var indent = document.getElementById('sidebar-indent').value;
     var firstLine = document.getElementById('sidebar-firstLine').value;
-    hideStatus();
     google.script.run
        .withSuccessHandler(function(msg) {
             // Respond to success conditions here.
@@ -54,18 +48,21 @@
   }
  
   function onStoreClick() {
+    hideStatus();
     var indent = document.getElementById('sidebar-indent').value;
     var firstLine = document.getElementById('sidebar-firstLine').value;
     var rootNode = document.getElementById('sidebar-storedList');
     
-    var rowNode,nodeButton,nodeText, nodeId;
-    hideStatus();
+    var rowNode,cellNode,nodeButton,nodeText, nodeId;
     //Add to root node
-    nodeId = "sidebar-setButton-"+indent+"-"+firstLine;
     rowNode = document.createElement("div");
-      rowNode.id = nodeId;
       rowNode.setAttribute("class", "row-action");
     rootNode.appendChild(rowNode)
+    
+    //Add cell
+    cellNode = document.createElement("div");
+      cellNode.setAttribute("class", "cell");
+    rootNode.appendChild(cellNode)
     
     //Set button
     nodeText = "Set ("+indent+","+firstLine+")"
@@ -75,23 +72,25 @@
       nodeButton.onclick = nodeSet;
       nodeButton.setAttribute("myIndent", indent);
       nodeButton.setAttribute("myFirstLine", firstLine);
-      nodeButton.setAttribute("class", "button");
-    rowNode.appendChild(nodeButton);
+      nodeButton.setAttribute("class", "button action");
+    cellNode.appendChild(nodeButton);
     
     //Remove Button
-    var nodeButton = document.createElement("input");
+    nodeButton = document.createElement("input");
       nodeButton.type = "button";
       nodeButton.value = "Remove";
       nodeButton.onclick = removeLine;
       nodeButton.setAttribute("class", "button");
-    rowNode.appendChild(nodeButton);
+    cellNode.appendChild(nodeButton);
     
-    //Notes Text
-    var nodeText = document.createElement("input");
+    //Note Text
+    nodeText = document.createElement("input");
       nodeText.type = "text";
+      nodeText.setAttribute("placeholder", "Note");
       nodeText.setAttribute("class", "note-text");
-      nodeText.setAttribute("placeholder", "Notes");
-    rowNode.appendChild(nodeText);
+    cellNode.appendChild(nodeText);
+    
+    showStatus("Create Button Done");
   }
   
 
@@ -99,8 +98,10 @@
   Button Controls
   **/
   function removeLine(){
+    hideStatus();
     var parent = this.parentNode;
     parent.parentNode.removeChild(parent);
+    showStatus("Remove Button Done");
   }
   
   function nodeSet(){
@@ -110,7 +111,7 @@
     google.script.run
        .withSuccessHandler(function(msg) {
             // Respond to success conditions here.
-            showStatus(msg, 'OK');
+            showStatus(msg);
           })
        .withFailureHandler(function(msg) {
             // Respond to failure conditions here.
@@ -123,42 +124,9 @@
   /**
   Updates Interface
   **/
-  function refreshInterface(preview, indent, firstLine){
-    $('#sidebar-cursor-preview').val(preview);
+  function refreshInterface(indent, firstLine){
     $('#sidebar-indent').val(indent);
     $('#sidebar-firstLine').val(firstLine);
-  }
-
-  function tickUpIndent() {
-    var value = parseInt(document.getElementById('sidebar-indent').value);
-    value = value +5;
-    $('#sidebar-indent').val(value);
-  }
-  
-  function tickDownIndent() {
-    var value = parseInt(document.getElementById('sidebar-indent').value);
-    value = value - 5;
-    if (value < 0){
-      $('#sidebar-indent').val(0);
-    } else {
-      $('#sidebar-indent').val(value);
-    }
-  }
-  
-  function tickUpFirstLine() {
-    var value = parseInt(document.getElementById('sidebar-firstLine').value);
-    value = value +5;
-    $('#sidebar-firstLine').val(value);
-  }
-  
-  function tickDownFirstLine() {
-    var value = parseInt(document.getElementById('sidebar-firstLine').value);
-    value = value - 5;
-    if (value < 0){
-      $('#sidebar-firstLine').val(0);
-    } else {
-      $('#sidebar-firstLine').val(value);
-    }
   }
 
   /**
@@ -169,13 +137,16 @@
    *   should be displayed as.
    */
   function showStatus(msg, classId) {
-    $('#sidebar-status').removeClass().html(msg);
-    if (classId) {
+    $('#sidebar-helper').removeClass("hidden");
+    $('#sidebar-status').html(msg);
+    if(classId){
       $('#sidebar-status').addClass(classId);
     }
+    
   }
   function hideStatus() {
-      $('#sidebar-status').addClass("hidden");
+      $('#sidebar-helper').addClass("hidden");
+      $('#sidebar-helper').removeClass("error");
   }
 
 </script>

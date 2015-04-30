@@ -1,5 +1,5 @@
 /**
- * Indenter v1.0
+ * Indenter v1.1
  * Created by Devin Hunter (Doltknuckle)
  *
  * This Add On is designed to quickly set the indentation values of text in a google doc.
@@ -10,7 +10,7 @@
 
 
 //** Global variables
-var SIDEBAR_TITLE = 'Indenter v1.0';
+var SIDEBAR_TITLE = 'Indenter v1.1';
 
 
 //** Initializtion
@@ -44,8 +44,6 @@ function getCursorInfo() {
   //* Gather information about the element that the cursor is in or the items selected.
   //Initalize variables
   var array = new Array();
-  var typeText = "something";
-  var content = "";
   var indent = 0;
   var firstLine = 0;
   //Get cursor and selection variable
@@ -62,8 +60,6 @@ function getCursorInfo() {
       type = element.getType();
     }
     //Get Data
-    typeText = "" + type;
-    content = checkText(element.getText(), 30);
     indent = checkIndent(element.getIndentStart(), indent);
     firstLine = checkIndent(element.getIndentFirstLine(), firstLine);
 
@@ -71,8 +67,6 @@ function getCursorInfo() {
     //If Selection
     var elements = selection.getRangeElements();
     var count = elements.length;
-    
-    typeText = "Selection(" + count +")";
     
     //loop through selection
     for (var i in elements){
@@ -85,18 +79,14 @@ function getCursorInfo() {
         type = target.getType();
       }
       //Get Data
-      content = content + type + ":" + checkText(target.getText(), 30) + '\n';
       indent = checkIndent(target.getIndentStart(), indent);
       firstLine = checkIndent(target.getIndentFirstLine(), firstLine);
     }
   } else {
-    typeText = "ERROR";
-    content = "Nothing to target";
+    throw new Error("Nothing to target");
   }
   
   //Push to array
-  array.push(typeText);
-  array.push(content);
   array.push(indent);    
   array.push(firstLine);
   return array;
@@ -104,14 +94,6 @@ function getCursorInfo() {
 
 
 //** Check Stuff
-
-function checkText(target, length) {
-  //Fix long content data
-  if (target.length > length){
-    target = target.substr(0,length) + '...';
-  }  
-  return target;
-}
 
 function checkIndent(input, current){
   //If no input, return zero, if smaller than curent, use curent.
@@ -127,7 +109,7 @@ function checkIndent(input, current){
 
 function setIndent(ind,fl){
   //- Change the indent of the targeted object.
-  var content = "OK"
+  var content = "Indent Done"
   var indent = parseInt(ind);
   var firstLine = parseInt(fl);
   var targetArray = new Array();
