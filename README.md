@@ -4,7 +4,9 @@ This porject is designed to create an add-on that allows users to set custom ind
 This is still a work in progress.
 
 Release History
+
 ---v1.1---
+
 Major changes to the interface as suggested by Google Apps reviewer
 - Removed text inspector
 - Added colors to action buttons
@@ -12,4 +14,5 @@ Major changes to the interface as suggested by Google Apps reviewer
 - Cleaned up unused code.
 
 ---v1.0---
+
 Initial Release
