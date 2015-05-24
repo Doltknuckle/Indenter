@@ -2,77 +2,121 @@
 <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
 
 <style>
-label {
-  font-weight: bold;
-}
-
-p {
-margin: 0px 0px 10px 0px;
-}
-
 h2 {
- margin-bottom: 4px;
+  padding: 0px;
+  margin: 0px;
 }
 
-.row,
-.row-action {
+#indent-image {
+  float: left;
+  width: 40px;
+  margin-bottom: 4px;
+}
+
+#firstLine-block{
+  height: 25px;
+  width: 12px;
+}
+
+#firstLine-text {
+  font-size: 10px;
+  text-align: center;
+}
+
+#firstLine-square {
+  width: 0; 
+  height: 0; 
+  border-left: 6px solid #A6C7F7;
+  border-right: 6px solid #A6C7F7;
+  border-bottom:2px solid #A6C7F7;
+  border-top: 2px solid #A6C7F7;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#indent-block{
+  width: 12px;
+}
+
+#indent-arrow {
+  width: 0; 
+  height: 0; 
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #A6C7F7;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#indent-text {
+  font-size: 10px;
+  text-align: center;
+}
+
+#indent-text {
+  font-size: 10px;
+  text-align: center;
+}
+
+#textPreview {
+  float: left;
+  margin-top: 9px; 
+  margin-left: 4px;
+  text-align: left;
+  line-height: 33px;
+  height: 33px;
+  width: 150px;
+}
+
+#action-bar {
+  height: 30px;
+}
+
+#history-label {
+  float: left;
+  line-height: 30px;
+  height: 30px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  
+}
+
+
+#history-list {
+  display: table;
+}
+.row {
   display: table-row;
 }
-
-.cell {
-  margin-bottom: 6px;
+.cell-left {
+  display: table-cell;
+  width: 85px;
+  padding-right: 4px;
+  padding-bottom: 4px;
 }
-
-.row-action {
-  margin-top: 2px;
-  margin-bottom: 2px;
+.cell-right {
+  display: table-cell;
+  width: 30px;
 }
-.button {
-  min-width: 60px;
-  margin-right: 4px;
-  float: left;
-}
-
-
-.note-text {
-  width: 90px;
-  margin-left: 6px !important;
-}
-
-.width-100 {
+.cell-middle {
+  display: table-cell;
   width: 100%;
-  box-sizing: border-box;
-  -webkit-box-sizing : border-box;?
-  -moz-box-sizing : border-box;
 }
 
-.input-integer {
- width: 50px;
-}
-
-.table-label {
-  font-weight: bold;
-  width: 25%
-}
-
-.hidden {
-  visibility: hidden;
-}
-
-
-#sidebar-button-bar,
-#dialog-button-bar,
-#dialog-elements {
-  margin-bottom: 10px;
-  margin-top: 10px;
-}
-
-#sidebar-status-label,
-#sidebar-status {
+.left {
   float: left;
 }
-#sidebar-status {
-  margin-left: 4px;
-  }
+
+.right {
+  float: right;
+}
+
+.clear {
+  clear: both;
+}
+
+.thin-button {
+  min-width: 29px !important; 
+}
 
 </style>

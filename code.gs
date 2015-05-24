@@ -1,5 +1,5 @@
 /**
- * Indenter v1.1
+ * Indenter v2.0
  * Created by Devin Hunter (Doltknuckle)
  *
  * This Add On is designed to quickly set the indentation values of text in a google doc.
@@ -10,7 +10,7 @@
 
 
 //** Global variables
-var SIDEBAR_TITLE = 'Indenter v1.1';
+var SIDEBAR_TITLE = 'Indenter v2.0';
 
 
 //** Initializtion
@@ -46,6 +46,7 @@ function getCursorInfo() {
   var array = new Array();
   var indent = 0;
   var firstLine = 0;
+  var content = "";
   //Get cursor and selection variable
   var cursor = DocumentApp.getActiveDocument().getCursor();
   var selection = DocumentApp.getActiveDocument().getSelection();  
@@ -62,6 +63,7 @@ function getCursorInfo() {
     //Get Data
     indent = checkIndent(element.getIndentStart(), indent);
     firstLine = checkIndent(element.getIndentFirstLine(), firstLine);
+    content = checkText(element.getText(),20);
 
   } else if(selection) {
     //If Selection
@@ -81,14 +83,18 @@ function getCursorInfo() {
       //Get Data
       indent = checkIndent(target.getIndentStart(), indent);
       firstLine = checkIndent(target.getIndentFirstLine(), firstLine);
+      if(i == 0){
+        content = checkText(target.getText(),20);
+      }
     }
+    
   } else {
     throw new Error("Nothing to target");
   }
-  
-  //Push to array
-  array.push(indent);    
+  //Push to array    
   array.push(firstLine);
+  array.push(indent);
+  array.push(content);
   return array;
 }
 
@@ -105,7 +111,15 @@ function checkIndent(input, current){
   return input;
 }
 
-//* Set Stuff
+function checkText(target, length){
+  //Fix long content data
+  if (target.length > length){
+    target = target.substr(0,length) + '...';
+  }  
+  return target;
+}
+
+//** Set Stuff
 
 function setIndent(ind,fl){
   //- Change the indent of the targeted object.
@@ -114,7 +128,7 @@ function setIndent(ind,fl){
   var firstLine = parseInt(fl);
   var targetArray = new Array();
   var target, type, object;
-  
+
   //Set indent of object at cursor or selection
   var cursor = DocumentApp.getActiveDocument().getCursor();
   var selection = DocumentApp.getActiveDocument().getSelection();
@@ -127,8 +141,8 @@ function setIndent(ind,fl){
     //Loop though elements
     for (var i in elements){
       performIndent(elements[i].getElement(), indent, firstLine);
-      }
     }
+  }
   return content;
 }
 
@@ -141,4 +155,27 @@ function performIndent(target, indent, firstLine){
     }
     target.setIndentStart(indent);
     target.setIndentFirstLine(firstLine);
+}
+
+function saveHistory(array) {
+  //Load property Value
+  var documentProperties = PropertiesService.getDocumentProperties();
+  if(array){
+    for (var item in array){
+      //Set property Value
+      documentProperties.setProperty(item,array[item]);
+    }
+  }
+}
+
+function getHistory() {
+  var documentProperties = PropertiesService.getDocumentProperties();
+  var propertyList = documentProperties.getProperties();
+  
+  return propertyList;
+}
+
+function clearHistory(){
+  var documentProperties = PropertiesService.getDocumentProperties();
+  documentProperties.deleteAllProperties();
 }

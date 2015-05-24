@@ -5,6 +5,15 @@ This is still a work in progress.
 
 Release History
 
+---v2.0---
+
+Complete rework of interface
+- Removed direct edit of ident values
+- Added image section to show what indent values of inspected element is.
+- Created Saveable history.
+- History now sorts on indent amount.
+- Button notes can now be updated through the inspector.
+
 ---v1.1---
 
 Major changes to the interface as suggested by Google Apps reviewer

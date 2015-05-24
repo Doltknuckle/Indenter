@@ -2,37 +2,46 @@
 <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
 
 <!-- Below is the HTML code that defines the sidebar element structure. -->
-<div class="sidebar branding-below">
-  <form>
-    <div class="row">
-      <p>Inspect cursor to get values for buttons.</p>
-    </div>
-    <div class="row">
-      <div class="cell">
-        <label for="sidebar-indent">Indent:</label>
-        <input type="number" id="sidebar-indent" value="0" class="input-integer">
+<div id="sidebar-ContentArea" class="sidebar">
+  <div id="control-block">
+    <h2>Indent Control</h2>
+    <div id="indent-image">
+      <div id="firstLine-block">
+        <div class="right">
+          <div id="firstLine-text">0</div>
+          <div id="firstLine-square"></div>
+        </div>
+      </div>
+      <div id="indent-block">
+        <div class="right">
+          <div id="indent-arrow"></div>
+          <div id="indent-text">0</div>
+        </div>
       </div>
     </div>
-    <div class="row">
-      <div class="cell">
-        <label for="sidebar-firstLine">First Line:</label>
-        <input type="number" id="sidebar-firstLine" value="0" class="input-integer cell">
-      </div>
+    <div id="textPreview">
+      <input id="preview-input" type="text" placeholder="">
     </div>
-    <div class="row">
-      <button id="sidebar-button-update">Inspect Cursor</button>
-      <button id="sidebar-button-store" class="action">Create Button</button>
+    <div id="action-bar" class="clear">
+      <button id="sidebar-button-inspect" class="left" title="Gets indent values at cursor or selection.">Inspect Selection</button>
+      <button id="sidebar-button-set" class="left action" title="Sets the indent values of text selected or at your cursor.">Set Indent</button>
     </div>
-  </form>
-  <hr/>
-  <h2>Action Buttons</h2>
-  <div id="sidebar-storedList"></div>
-  <hr />
-  <div id="sidebar-helper">
-    <div class="row">
-      <div id="sidebar-status-label">Status:</div>
-      <div id="sidebar-status">Initalize</div>
+  </div>
+  <hr class="clear"/>
+  <div id="history-block">
+    <div id="history-header">
+      <h2 id="history-label">Indent History </h2>
+      <button id="sidebar-button-saveHistory" class="left" title="Save Current History.">Save</button>
+      <button id="sidebar-button-clearHistory" class="left" title="Clear History">Clear</button>
     </div>
+    <div class="clear"></div>
+    <div id="history-list" class="history-row left" style="width: 100%">
+    </div>
+  </div>
+  <hr class="clear"/>
+  <div>
+    <div id="sidebar-status-label">Status:</div>
+    <div id="sidebar-status">Initalize</div>
   </div>
 </div>
 
