@@ -1,5 +1,5 @@
 /**
- * Indenter v2.0
+ * Indenter v2.1
  * Created by Devin Hunter (Doltknuckle)
  *
  * This Add On is designed to quickly set the indentation values of text in a google doc.
@@ -10,7 +10,7 @@
 
 
 //** Global variables
-var SIDEBAR_TITLE = 'Indenter v2.0';
+var SIDEBAR_TITLE = 'Indenter v2.1';
 
 
 //** Initializtion
@@ -24,6 +24,7 @@ function onOpen(e) {
   DocumentApp.getUi()
       .createAddonMenu()
       .addItem('Open Tool', 'showSidebar')
+      .addItem('Clear Indent History', 'clearHistoryDialog')
       .addToUi();
 }
 
@@ -37,11 +38,22 @@ function showSidebar() {
   DocumentApp.getUi().showSidebar(ui);
 }
 
+function clearHistoryDialog() {
+  //Prompt user to see if they actually want to remove all document properties.
+  var ui = DocumentApp.getUi();
+  var result = ui.alert(
+     'Are you sure you want to remove all saved document parameters?',
+      ui.ButtonSet.YES_NO);
+  if (result == ui.Button.YES) {
+    // User clicked "Yes".
+    clearHistory();
+  }
+}
+
 
 //** Get Stuff
-
 function getCursorInfo() {
-  //* Gather information about the element that the cursor is in or the items selected.
+  //Gather information about the element that the cursor is in or the items selected.
   //Initalize variables
   var array = new Array();
   var indent = 0;
@@ -120,7 +132,6 @@ function checkText(target, length){
 }
 
 //** Set Stuff
-
 function setIndent(ind,fl){
   //- Change the indent of the targeted object.
   var content = "Indent Done"
@@ -169,13 +180,16 @@ function saveHistory(array) {
 }
 
 function getHistory() {
+  //Return all document properties
   var documentProperties = PropertiesService.getDocumentProperties();
   var propertyList = documentProperties.getProperties();
   
   return propertyList;
 }
 
-function clearHistory(){
+function clearHistory() {
+  //Remove all document properites
   var documentProperties = PropertiesService.getDocumentProperties();
   documentProperties.deleteAllProperties();
-}
+  }
+

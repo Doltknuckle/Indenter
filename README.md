@@ -5,6 +5,12 @@ This is still a work in progress.
 
 Release History
 
+---v2.1---
+Additional tweaks
+- Reworked history interface.
+- Renamed buttons.
+
+
 ---v2.0---
 
 Complete rework of interface

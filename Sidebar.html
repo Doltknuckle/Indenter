@@ -5,41 +5,39 @@
 <div id="sidebar-ContentArea" class="sidebar">
   <div id="control-block">
     <h2>Indent Control</h2>
-    <div id="indent-image">
-      <div id="firstLine-block">
+    <div class="indent-img">
+      <div id="firstLine-block" class="indent-img-block">
         <div class="right">
-          <div id="firstLine-text">0</div>
-          <div id="firstLine-square"></div>
+          <div id="firstLine-text" class="indent-img-text">0</div>
+          <div class="indent-img-square"></div>
         </div>
       </div>
-      <div id="indent-block">
+      <div id="indent-block" class="indent-img-block">
         <div class="right">
-          <div id="indent-arrow"></div>
-          <div id="indent-text">0</div>
+          <div class="indent-img-arrow"></div>
+          <div id="indent-text" class="indent-img-text">0</div>
         </div>
       </div>
     </div>
     <div id="textPreview">
-      <input id="preview-input" type="text" placeholder="">
+      <input id="preview-input" type="text" placeholder="" maxlength="20">
     </div>
     <div id="action-bar" class="clear">
-      <button id="sidebar-button-inspect" class="left" title="Gets indent values at cursor or selection.">Inspect Selection</button>
-      <button id="sidebar-button-set" class="left action" title="Sets the indent values of text selected or at your cursor.">Set Indent</button>
+      <button id="sidebar-button-inspect" class="left action" title="Gets indent values at cursor or selection. Create a button" disabled>Inspect</button>
+      <button id="sidebar-button-note" class="left" title="Updates the note on the currnet indent button." disabled>Update Note</button>
     </div>
   </div>
   <hr class="clear"/>
   <div id="history-block">
     <div id="history-header">
       <h2 id="history-label">Indent History </h2>
-      <button id="sidebar-button-saveHistory" class="left" title="Save Current History.">Save</button>
-      <button id="sidebar-button-clearHistory" class="left" title="Clear History">Clear</button>
+      <button id="sidebar-button-saveHistory" class="right" title="Save Current History.">Save</button>
     </div>
     <div class="clear"></div>
     <div id="history-list" class="history-row left" style="width: 100%">
     </div>
   </div>
-  <hr class="clear"/>
-  <div>
+  <div id="sidebar-helper" class="hidden clear">
     <div id="sidebar-status-label">Status:</div>
     <div id="sidebar-status">Initalize</div>
   </div>

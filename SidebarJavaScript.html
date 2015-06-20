@@ -4,29 +4,37 @@
    * Run initializations on sidebar load.
    */
   $(function() {
+    console.log("---Indenter JavaScript Init---");
     //setup buttons
     $('#sidebar-button-inspect').click(onInspectClick);
-    $('#sidebar-button-set').click(onSetClick); 
+    $('#sidebar-button-note').click(onSetClick); 
     $('#sidebar-button-saveHistory').click(onSaveClick); 
-    $('#sidebar-button-clearHistory').click(onClearClick); 
+    
+    var button1 = document.getElementById("sidebar-button-inspect");
+    var button2 = document.getElementById("sidebar-button-note");
     
     //setupHistory
-    refreshInterface(0,0,"Note: Script");
+    refreshInterface(0,0,"Custom Note Field");
     google.script.run
        .withSuccessHandler(function(propertyList) {
             // Respond to success conditions here.
+            console.log("Found Properties:");
             for (var item in propertyList){
               if (item.substr(0,3) == "IND"){
                 var rootKey = item.substr(3);
                 var keyArray = rootKey.split("x");
                 var inputText = propertyList[item];
+                
                 addToHistory(keyArray[0],keyArray[1],inputText);
+                console.log(" IND:" + keyArray[0] + "x" + keyArray[1]); //Log propertylist
               }
             }
-            showStatus("Load Complete");
+            button1.disabled = false;
+            button2.disabled = false;
           })
        .withFailureHandler(function(msg) {
             // Respond to failure conditions here.
+            console.log(msg);
             showStatus(msg, 'error');
           })
        .getHistory();
@@ -36,103 +44,106 @@
  Button Actions
 **/
   function onInspectClick() {
+    var button = this;
+    console.log("--Inspect Button Clicked--");
     hideStatus();
+    button.disabled = true;
     //Get Cursor Parent
     google.script.run
        .withSuccessHandler(function(cursorParent) {
             // Respond to success conditions here.
             refreshInterface(cursorParent[0], cursorParent[1], cursorParent[2]);
             addToHistory(cursorParent[1],cursorParent[0],cursorParent[2]);
-            showStatus("Update Done");
+            
+            console.log(" FirstLine:" + cursorParent[0]);
+            console.log(" Indent:" + cursorParent[1]);
+            console.log(" Content Text:" + cursorParent[2]);
+            button.disabled = false;
           })
        .withFailureHandler(function(msg) {
             // Respond to failure conditions here.
+            console.log(msg);
             showStatus(msg, 'error');
           })
        .getCursorInfo();
+       
   }
   
   function onSetClick() {
+    console.log("--Set Note Button Clicked--");
     hideStatus();
+    
     //Update Current item
     var indent = document.getElementById('indent-text').innerHTML;
     var firstLine = document.getElementById('firstLine-text').innerHTML;
     var inputText = document.getElementById('preview-input').value;
     var inputDefault = document.getElementById('preview-input').getAttribute("placeholder");
     
+    //Logging
+    console.log(" FirstLine:" + firstLine);
+    console.log(" Indent:" + indent);
+    console.log(" Note Text:" + inputText);
+    console.log(" Placeholder:" + inputDefault);
+    
     //Set Note text
     if (!inputText) {
       inputText = inputDefault
-    }
-    
-    //RunIndent
-    google.script.run
-       .withSuccessHandler(function(msg) {
-            // Respond to success conditions here.
-            showStatus(msg);
-          })
-       .withFailureHandler(function(msg) {
-            // Respond to failure conditions here.
-            showStatus(msg, 'error');
-          })
-       .setIndent(indent, firstLine);
+    } else if (inputText.length > 25){
+      inputText = inputText.substr(0,25) + '...';
+    }  
     
     //Add to History
     addToHistory(indent,firstLine,inputText);
+    
+    console.log("History Added:" + firstLine + "x" + indent + "-" + inputText);
   }
 
 function onSaveClick() {
-  //Save set history
-
+  //Save current indent buttons
+  console.log("--Save Button Clicked--");
+  var button = this;
+  button.disabled = true;
+ 
   //Clear curent history
   google.script.run
     .withSuccessHandler(function(msg) {
         // Respond to success conditions here.
-        showStatus("Clear Complete");
+        console.log(" Clear Complete");
       })
     .withFailureHandler(function(msg) {
         // Respond to failure conditions here.
+        console.log(msg);
         showStatus(msg, 'error');
       })
     .clearHistory();
  
   //Build button array
   var buttonSettings = {}
-  var rootNode = document.getElementById('history-list');
-  var target = rootNode.childNodes[0];
+  var rootNode = document.getElementById('history-list'); //Load history list
+  var target = rootNode.childNodes[0]; //Get first child
   while (target) {
+    //Loop though child nodes
     if(target.nodeType == 1){
-      buttonSettings[target.id] = target.childNodes[1].childNodes[0].innerHTML;
+      buttonSettings[target.id] = target.childNodes[2].childNodes[0].innerHTML; //Get Indent content
+      console.log(" " + buttonSettings[target.id]);
     }
-    target = target.nextSibling;
+    target = target.nextSibling; //Go to next child
   }
+  
+  
   //Save button array
   google.script.run
     .withSuccessHandler(function(msg) {
         // Respond to success conditions here.
-        showStatus("Save Complete");
+        console.log(" Save Complete");
+        button.disabled = false;
       })
     .withFailureHandler(function(msg) {
         // Respond to failure conditions here.
+        console.log(msg);
         showStatus(msg, 'error');
       })
     .saveHistory(buttonSettings);
-}
-
-function onClearClick() {
-  //Clear history
-  var rootNode = document.getElementById('history-list');
-  rootNode.innerHTML = "";
-  google.script.run
-    .withSuccessHandler(function(msg) {
-        // Respond to success conditions here.
-        showStatus("Clear Complete");
-      })
-    .withFailureHandler(function(msg) {
-        // Respond to failure conditions here.
-        showStatus(msg, 'error');
-      })
-    .clearHistory();
 }
 
   /**
@@ -141,21 +152,29 @@ function onClearClick() {
   function removeLine(){
     hideStatus();
     var parent = this.parentNode.parentNode;
+    var id = parent.id;
+    
     parent.parentNode.removeChild(parent);
-    showStatus("Remove Button Done");
+    console.log("--Remove Line button pressed:" + id + "--");
   }
   
   function nodeSet(){
    var indent = this.getAttribute("myIndent");
    var firstLine = this.getAttribute("myFirstLine");
+   var button = this;
+   console.log("Node Apply button pressed: " + firstLine + "x" + indent);
    hideStatus();
+   button.disabled = true;
+   
     google.script.run
        .withSuccessHandler(function(msg) {
             // Respond to success conditions here.
-            showStatus(msg);
+            console.log(msg);
+            button.disabled = false;
           })
        .withFailureHandler(function(msg) {
             // Respond to failure conditions here.
+            console.log(msg);
             showStatus(msg, 'error');
           })
        .setIndent(indent, firstLine);
@@ -166,6 +185,8 @@ function onClearClick() {
   Updates Interface
   **/
   function refreshInterface(firstLine, indent, content){
+    //Log
+    console.log("refreshInterface:" + firstLine + "x" + indent + "-" + content);
     //Text update
     $('#firstLine-text').html(firstLine);
     $('#indent-text').html(indent);
@@ -208,24 +229,25 @@ function onClearClick() {
   }
   
   function addToHistory(indent,firstLine,inputText) {
-  //Add to History
-    //TODO: trigger history update
+    //Add to History
     var historyID = "IND" + indent + "x" + firstLine;
     var historyElement = document.getElementById(historyID);
     if(historyElement){
       //Update History text
-      historyElement.childNodes[1].childNodes[0].innerHTML = inputText;
+      console.log("Indent button already exists:" + historyID);
+      historyElement.childNodes[2].childNodes[0].innerHTML = inputText;
 
     } else {
       //Add history
       var rootNode = document.getElementById('history-list');
-      var rowNode,cellNode,nodeButton,nodeNote,nodeText, nodeId;
+      var rowNode,cellNode,nodeButton,nodeNote,nodeText, nodeId, nodeImg, 
+        nodeBlockTop, nodeBlockTopText, nodeBlockTopIcon,
+        nodeBlockBot, nodeBlockBotText, nodeBlockBotIcon;
       var targetNode = rootNode;
       var foundNode;
       
       //Get first (empty) child
       var childNode = rootNode.childNodes[0];
-      console.log(rootNode.innerHTML);
       
       //Check indent values
       if(childNode){
@@ -238,7 +260,6 @@ function onClearClick() {
             var childID = childNode.id;
             var rootKey = childID.substr(3);
             var keyArray = rootKey.split("x");
-            console.log(keyArray[0]);
             
             //Check for less than
             if(indent < parseInt(keyArray[0])){
@@ -252,36 +273,72 @@ function onClearClick() {
       //Build Node
       rowNode = document.createElement("div");
         rowNode.setAttribute("id",historyID);
-        rowNode.setAttribute("class", "row");
+        rowNode.setAttribute("class","row")
       
       //Add to list
       if(foundNode){
-        console.log("foundNode");
         rootNode.insertBefore(rowNode,foundNode);
       } else {
-        console.log("rootNode");
         rootNode.appendChild(rowNode);
       }
       
-      //Add left cell
+      //Button Cell
       cellNode = document.createElement("div");
-        cellNode.setAttribute("class", "cell-left");
+        cellNode.setAttribute("class", "cell-button");
       rowNode.appendChild(cellNode);
       
-      //Set button
-      nodeText = "Set ("+indent+","+firstLine+")"
+      //Apply button
+      nodeText = "Apply"
       nodeButton = document.createElement("input");
         nodeButton.type = "button";
         nodeButton.value = nodeText;
         nodeButton.onclick = nodeSet;
         nodeButton.setAttribute("myIndent", indent);
         nodeButton.setAttribute("myFirstLine", firstLine);
-        nodeButton.setAttribute("class", "button");
+        nodeButton.setAttribute("class", "button low");
       cellNode.appendChild(nodeButton);
-
-      //Add middle cell
+ 
+      //Img Cell
       cellNode = document.createElement("div");
-        cellNode.setAttribute("class", "cell-middle");
+        cellNode.setAttribute("class", "cell-img");
+      rowNode.appendChild(cellNode);
+      
+      //Add img block
+      nodeImg = document.createElement("div");
+        nodeImg.setAttribute("class", "indent-img-lower");
+      cellNode.appendChild(nodeImg);
+      
+      //Top Block
+      nodeBlockTop = document.createElement("div");
+        nodeBlockTop.setAttribute("class", "indent-img-block");
+      nodeImg.appendChild(nodeBlockTop);
+      
+      nodeBlockTopText = document.createElement("div");
+        nodeBlockTopText.setAttribute("class", "indent-img-text");
+        nodeBlockTopText.innerHTML = firstLine;
+      nodeBlockTop.appendChild(nodeBlockTopText);
+      
+      nodeBlockTopIcon = document.createElement("div");
+        nodeBlockTopIcon.setAttribute("class", "indent-img-square");
+      nodeBlockTop.appendChild(nodeBlockTopIcon); 
+      
+      //Bot Block
+      nodeBlockBot = document.createElement("div");
+        nodeBlockBot.setAttribute("class", "indent-img-block");
+      nodeImg.appendChild(nodeBlockBot);
+      
+      nodeBlockBotIcon = document.createElement("div");
+        nodeBlockBotIcon.setAttribute("class", "indent-img-arrow");
+      nodeBlockBot.appendChild(nodeBlockBotIcon); 
+      
+      nodeBlockBotText = document.createElement("div");
+        nodeBlockBotText.setAttribute("class", "indent-img-text");
+        nodeBlockBotText.innerHTML = indent;
+      nodeBlockBot.appendChild(nodeBlockBotText);
+      
+      //Note Cell
+      cellNode = document.createElement("div");
+        cellNode.setAttribute("class", "cell-note");
       rowNode.appendChild(cellNode);
       
       //Note Text
@@ -290,9 +347,9 @@ function onClearClick() {
         nodeNote.setAttribute("class", "note-text");
       cellNode.appendChild(nodeNote);
       
-      //Add right cell
+      //Remove Cell
       cellNode = document.createElement("div");
-        cellNode.setAttribute("class", "cell-right");
+        cellNode.setAttribute("class", "cell-remove");
       rowNode.appendChild(cellNode);
       
       //Remove Button
@@ -324,5 +381,13 @@ function onClearClick() {
       $('#sidebar-helper').addClass("hidden");
       $('#sidebar-helper').removeClass("error");
   }
-
+  
+  function disableButton(object) {
+    object.disabled = true;
+  }
+  
+  function enableButton(object) {
+    object.disabled = false;
+  }
+  
 </script>

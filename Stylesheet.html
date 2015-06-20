@@ -7,23 +7,27 @@ h2 {
   margin: 0px;
 }
 
-#indent-image {
+.indent-img {
   float: left;
   width: 40px;
   margin-bottom: 4px;
 }
 
-#firstLine-block{
+.indent-img-lower {
+  margin-left: 4px;
+}
+
+.indent-img-block {
   height: 25px;
   width: 12px;
 }
 
-#firstLine-text {
+.indent-img-text {
   font-size: 10px;
   text-align: center;
 }
 
-#firstLine-square {
+.indent-img-square {
   width: 0; 
   height: 0; 
   border-left: 6px solid #A6C7F7;
@@ -34,11 +38,7 @@ h2 {
   margin-right: auto;
 }
 
-#indent-block{
-  width: 12px;
-}
-
-#indent-arrow {
+.indent-img-arrow {
   width: 0; 
   height: 0; 
   border-left: 6px solid transparent;
@@ -48,14 +48,9 @@ h2 {
   margin-right: auto;
 }
 
-#indent-text {
-  font-size: 10px;
-  text-align: center;
-}
-
-#indent-text {
-  font-size: 10px;
-  text-align: center;
+.indent-img-button {
+  float: left;
+  margin-top: 9px;
 }
 
 #textPreview {
@@ -65,6 +60,8 @@ h2 {
   text-align: left;
   line-height: 33px;
   height: 33px;
+}
+#preview-input {
   width: 150px;
 }
 
@@ -85,9 +82,36 @@ h2 {
 #history-list {
   display: table;
 }
+
+.cell-lower {
+  ,argin-top: 9px;
+}
+
 .row {
   display: table-row;
 }
+
+.cell-button {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.cell-img {
+  display: table-cell;
+  width: 20px;
+}
+
+.cell-note {
+  display: table-cell;
+  vertical-align: middle;
+  width: 156px;
+}
+
+.cell-remove {
+  display: table-cell;
+  vertical-align: middle;
+}
+
 .cell-left {
   display: table-cell;
   width: 85px;
@@ -104,19 +128,23 @@ h2 {
 }
 
 .left {
-  float: left;
+	float: left;
 }
 
 .right {
-  float: right;
+	float: right;
 }
 
 .clear {
-  clear: both;
+	clear: both;
 }
 
 .thin-button {
   min-width: 29px !important; 
+}
+
+.hidden {
+  display: none;
 }
 
 </style>
