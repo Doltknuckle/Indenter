@@ -4,34 +4,31 @@
 <!-- Below is the HTML code that defines the sidebar element structure. -->
 <div id="sidebar-ContentArea" class="sidebar">
   <div id="control-block">
-    <h2>Indent Control</h2>
+    <h2>Most Recent Indent</h2>
     <div class="indent-img">
       <div id="firstLine-block" class="indent-img-block">
-        <div class="right">
           <div id="firstLine-text" class="indent-img-text">0</div>
           <div class="indent-img-square"></div>
-        </div>
       </div>
       <div id="indent-block" class="indent-img-block">
-        <div class="right">
           <div class="indent-img-arrow"></div>
           <div id="indent-text" class="indent-img-text">0</div>
-        </div>
       </div>
     </div>
     <div id="textPreview">
       <input id="preview-input" type="text" placeholder="" maxlength="20">
     </div>
     <div id="action-bar" class="clear">
-      <button id="sidebar-button-inspect" class="left action" title="Gets indent values at cursor or selection. Create a button" disabled>Inspect</button>
-      <button id="sidebar-button-note" class="left" title="Updates the note on the currnet indent button." disabled>Update Note</button>
+      <button id="sidebar-button-get" class="left" title="Gets indent values at cursor or selection. Create a button" disabled>Get Indent</button>
+      <button id="sidebar-button-clone" class="left action" title="Copies current indent to current selection." disabled>Clone Indent</button>
     </div>
   </div>
   <hr class="clear"/>
   <div id="history-block">
     <div id="history-header">
-      <h2 id="history-label">Indent History </h2>
-      <button id="sidebar-button-saveHistory" class="right" title="Save Current History.">Save</button>
+      <h2 id="history-label">Indent Cache </h2>
+      <button id="sidebar-button-clearHistory" class="right" style="margin-left: 6px;" title="Clear History">Clear</button>
+      <button id="sidebar-button-saveHistory" class="right" style="margin-left: 0px;" title="Save Current History.">Save</button>
     </div>
     <div class="clear"></div>
     <div id="history-list" class="history-row left" style="width: 100%">

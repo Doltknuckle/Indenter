@@ -6,12 +6,13 @@
   $(function() {
     console.log("---Indenter JavaScript Init---");
     //setup buttons
-    $('#sidebar-button-inspect').click(onInspectClick);
-    $('#sidebar-button-note').click(onSetClick); 
-    $('#sidebar-button-saveHistory').click(onSaveClick); 
+    $('#sidebar-button-get').click(onGetClick);
+    $('#sidebar-button-clone').click(onCloneClick); 
+    $('#sidebar-button-saveHistory').click(onSaveClick);
+    $('#sidebar-button-clearHistory').click(onClearClick); 
     
-    var button1 = document.getElementById("sidebar-button-inspect");
-    var button2 = document.getElementById("sidebar-button-note");
+    var button1 = document.getElementById("sidebar-button-get");
+    var button2 = document.getElementById("sidebar-button-clone");
     
     //setupHistory
     refreshInterface(0,0,"Custom Note Field");
@@ -38,14 +39,62 @@
             showStatus(msg, 'error');
           })
        .getHistory();
-  });
+
+  $(document).click(function(event) {
+    var clickTarget = event.target;
+    if(clickTarget.className == "indent-img-text"){
+      var clickParent = clickTarget.parentNode;
+      console.log(clickSibling);
+      var tempNode = document.createElement("input");
+        tempNode.id = "clickTarget";
+        tempNode.type = "text";
+        tempNode.value = clickTarget.innerHTML;
+        tempNode.setAttribute("class", "clickTargetForm");
+        tempNode.setAttribute("style", "width: 25px; height: 16px; padding: 1px; font-size: 10px; text-align: center;");
+        tempNode.setAttribute("myVar1", clickTarget.id);
+      clickParent.insertBefore(tempNode, clickTarget);
+      clickParent.removeChild(clickTarget);
+ 
+      button1.disabled = true;
+      button2.disabled = true;
+      } else if (clickTarget.className == "clickTargetForm"){
+       //Do nothing
+      }
+      else {
+        var cleanupTarget = document.getElementById("clickTarget");
+        if(cleanupTarget != null){
+          var parsedValue = parseInt(cleanupTarget.value) || 0;
+          var cleanupParent = cleanupTarget.parentNode;
+          var tempNode = document.createElement("div");
+            tempNode.id = cleanupTarget.getAttribute("myVar1");
+            tempNode.innerHTML = parsedValue;
+            tempNode.setAttribute("class", "indent-img-text");
+        cleanupParent.insertBefore(tempNode, cleanupTarget);
+        cleanupParent.removeChild(cleanupTarget);
+ 
+        button1.disabled = false;
+        button2.disabled = false;
+        var indent = document.getElementById('indent-text').innerHTML;
+        var firstLine = document.getElementById('firstLine-text').innerHTML;
+        var inputText = document.getElementById('preview-input').value;
+        var inputDefault = document.getElementById('preview-input').getAttribute("placeholder");
+        var content = shortenText(inputText, inputDefault);
+        refreshInterface(firstLine, indent, content);
+        }
+      }
+
+    });
+
+});
+
+
 
 /**
  Button Actions
 **/
-  function onInspectClick() {
+  function onGetClick() {
     var button = this;
-    console.log("--Inspect Button Clicked--");
+    console.log("--Get Indent Button Clicked--");
     hideStatus();
     button.disabled = true;
     //Get Cursor Parent
@@ -69,8 +118,8 @@
        
   }
   
-  function onSetClick() {
-    console.log("--Set Note Button Clicked--");
+  function onCloneClick() {
+    console.log("--Clone Indent Button Clicked--");
     hideStatus();
     
     //Update Current item
@@ -78,24 +127,26 @@
     var firstLine = document.getElementById('firstLine-text').innerHTML;
     var inputText = document.getElementById('preview-input').value;
     var inputDefault = document.getElementById('preview-input').getAttribute("placeholder");
+    var content = shortenText(inputText, inputDefault);
     
-    //Logging
-    console.log(" FirstLine:" + firstLine);
-    console.log(" Indent:" + indent);
-    console.log(" Note Text:" + inputText);
-    console.log(" Placeholder:" + inputDefault);
+    var button = this;
+    console.log("Settings: " + firstLine + "x" + indent + " :" + content);
+    button.disabled = true;
+   
+    google.script.run
+       .withSuccessHandler(function(msg) {
+            // Respond to success conditions here.
+            console.log(msg);
+            button.disabled = false;
+          })
+       .withFailureHandler(function(msg) {
+            // Respond to failure conditions here.
+            console.log(msg);
+            showStatus(msg, 'error');
+          })
+       .setIndent(indent, firstLine);
     
-    //Set Note text
-    if (!inputText) {
-      inputText = inputDefault
-    } else if (inputText.length > 25){
-      inputText = inputText.substr(0,25) + '...';
-    }  
-    
-    //Add to History
-    addToHistory(indent,firstLine,inputText);
-    
-    console.log("History Added:" + firstLine + "x" + indent + "-" + inputText);
+    addToHistory(indent,firstLine,content);
   }
 
 function onSaveClick() {
@@ -146,6 +197,22 @@ function onSaveClick() {
     .saveHistory(buttonSettings);
 }
 
+function onClearClick() {
+  //Clear history
+  var rootNode = document.getElementById('history-list');
+  rootNode.innerHTML = "";
+  google.script.run
+    .withSuccessHandler(function(msg) {
+        // Respond to success conditions here.
+        console.log(" Clear Complete");
+      })
+    .withFailureHandler(function(msg) {
+        // Respond to failure conditions here.
+        console.log(msg);
+        showStatus(msg, 'error');
+      })
+    .clearHistory();
+}
   /**
   Button Controls
   **/
@@ -161,14 +228,17 @@ function onSaveClick() {
   function nodeSet(){
    var indent = this.getAttribute("myIndent");
    var firstLine = this.getAttribute("myFirstLine");
+   var note = this.parentNode.parentNode.childNodes[2].firstChild.innerHTML;
    var button = this;
-   console.log("Node Apply button pressed: " + firstLine + "x" + indent);
+   console.log("Node Apply button pressed: " + firstLine + "x" + indent + " : " + note);
    hideStatus();
    button.disabled = true;
-   
+   refreshInterface(firstLine,indent,note);
+            
     google.script.run
        .withSuccessHandler(function(msg) {
             // Respond to success conditions here.
+
             console.log(msg);
             button.disabled = false;
           })
@@ -190,7 +260,10 @@ function onSaveClick() {
     //Text update
     $('#firstLine-text').html(firstLine);
     $('#indent-text').html(indent);
-    document.getElementById("preview-input").setAttribute("placeholder", content);
+    var textInput = document.getElementById("preview-input");
+    textInput.setAttribute("placeholder", content);
+    textInput.value = "";
+    
     
     var firstLineBlock = document.getElementById("firstLine-block");
     var indentBlock = document.getElementById("indent-block");
@@ -200,8 +273,8 @@ function onSaveClick() {
     indent = parseInt(indent);
     
     //Set indent values
-    firstLineBlock.setAttribute("style", "margin-left: " + setImageIndentNumber(firstLine,indent,36,14) + "px;");
-    indentBlock.setAttribute("style", "margin-left: " + setImageIndentNumber(indent,firstLine,36,14) + "px;");
+    firstLineBlock.setAttribute("style", "margin-left: " + setImageIndentNumber(firstLine,indent,36,10) + "px;");
+    indentBlock.setAttribute("style", "margin-left: " + setImageIndentNumber(indent,firstLine,36,10) + "px;");
   }
 
   /**
@@ -227,6 +300,21 @@ function onSaveClick() {
     //Result
     return binReturn;
   }
+  
+ function shortenText(field, placeholder){
+   var returnText = "";
+   console.log("ShortenText:" + field + "/" + placeholder);
+   //Set Note text
+    if (!field) {
+      returnText = placeholder;
+    } else if (field.length > 25){
+      returnText = field.substr(0,22) + '...';
+    }  else {
+      returnText = field;
+    }
+    return returnText;
+ }
+  
   
   function addToHistory(indent,firstLine,inputText) {
     //Add to History
@@ -310,11 +398,11 @@ function onSaveClick() {
       
       //Top Block
       nodeBlockTop = document.createElement("div");
-        nodeBlockTop.setAttribute("class", "indent-img-block");
+        nodeBlockTop.setAttribute("class", "indent-img-block-low");
       nodeImg.appendChild(nodeBlockTop);
       
       nodeBlockTopText = document.createElement("div");
-        nodeBlockTopText.setAttribute("class", "indent-img-text");
+        nodeBlockTopText.setAttribute("class", "indent-img-text-low");
         nodeBlockTopText.innerHTML = firstLine;
       nodeBlockTop.appendChild(nodeBlockTopText);
       
@@ -324,7 +412,7 @@ function onSaveClick() {
       
       //Bot Block
       nodeBlockBot = document.createElement("div");
-        nodeBlockBot.setAttribute("class", "indent-img-block");
+        nodeBlockBot.setAttribute("class", "indent-img-block-low");
       nodeImg.appendChild(nodeBlockBot);
       
       nodeBlockBotIcon = document.createElement("div");
@@ -332,7 +420,7 @@ function onSaveClick() {
       nodeBlockBot.appendChild(nodeBlockBotIcon); 
       
       nodeBlockBotText = document.createElement("div");
-        nodeBlockBotText.setAttribute("class", "indent-img-text");
+        nodeBlockBotText.setAttribute("class", "indent-img-text-low");
         nodeBlockBotText.innerHTML = indent;
       nodeBlockBot.appendChild(nodeBlockBotText);
       

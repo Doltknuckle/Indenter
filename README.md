@@ -1,9 +1,11 @@
 # Indenter
 This porject is designed to create an add-on that allows users to set custom indentation of text in a google doc. This allows the user to make text consitent through the entire document.
 
-This is still a work in progress.
-
 Release History
+
+---v3.1---
+Version number fix to match Google Adviser (still working this whole thing out)
+- Finalized interface.
 
 ---v2.1---
 Additional tweaks

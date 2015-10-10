@@ -1,5 +1,5 @@
 /**
- * Indenter v2.1
+ * Indenter v3.1
  * Created by Devin Hunter (Doltknuckle)
  *
  * This Add On is designed to quickly set the indentation values of text in a google doc.
@@ -10,7 +10,7 @@
 
 
 //** Global variables
-var SIDEBAR_TITLE = 'Indenter v2.1';
+var SIDEBAR_TITLE = 'Indenter';
 
 
 //** Initializtion
@@ -23,8 +23,8 @@ function onOpen(e) {
   //Create the menu. This will only work on a google doc.
   DocumentApp.getUi()
       .createAddonMenu()
-      .addItem('Open Tool', 'showSidebar')
-      .addItem('Clear Indent History', 'clearHistoryDialog')
+      .addItem('Open Clone Tool', 'showSidebar')
+      .addItem('Clear Indent Cache', 'clearHistoryDialog')
       .addToUi();
 }
 
@@ -34,7 +34,7 @@ function showSidebar() {
   //Create the menu from HTML file.
   var ui = HtmlService.createTemplateFromFile('Sidebar')
       .evaluate()
-      .setTitle(SIDEBAR_TITLE);
+      .setTitle("Clone Tool - " + SIDEBAR_TITLE);
   DocumentApp.getUi().showSidebar(ui);
 }
 
@@ -56,8 +56,8 @@ function getCursorInfo() {
   //Gather information about the element that the cursor is in or the items selected.
   //Initalize variables
   var array = new Array();
-  var indent = 0;
-  var firstLine = 0;
+  var indent = 0.0;
+  var firstLine = 0.0;
   var content = "";
   //Get cursor and selection variable
   var cursor = DocumentApp.getActiveDocument().getCursor();
@@ -75,7 +75,7 @@ function getCursorInfo() {
     //Get Data
     indent = checkIndent(element.getIndentStart(), indent);
     firstLine = checkIndent(element.getIndentFirstLine(), firstLine);
-    content = checkText(element.getText(),20);
+    content = checkText(element.getText(),18);
 
   } else if(selection) {
     //If Selection
@@ -96,7 +96,7 @@ function getCursorInfo() {
       indent = checkIndent(target.getIndentStart(), indent);
       firstLine = checkIndent(target.getIndentFirstLine(), firstLine);
       if(i == 0){
-        content = checkText(target.getText(),20);
+        content = checkText(target.getText(),18);
       }
     }
     
